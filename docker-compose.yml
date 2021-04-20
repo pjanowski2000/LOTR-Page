@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  nginx:
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports: 
+      - "80:80"
+  frontend:
+    environment: 
+      CHOKIDAR_USEPOLLING: "true"
+    build:
+      dockerfile: Dockerfile
+      context: ./Front
+    volumes:
+      - /opt/app/node_modules
+      - ./Front:/opt/app
+    ports:
+      - "3000:3000"
+  my-mongo:
+    restart: always
+    image: 'mongo'
+    volumes: 
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./Backend
+    volumes:
+      - /opt/app/node_modules
+      - ./Backend:/opt/app
+    ports:
+      - "5000:5000"
+volumes: 
+  mongo-data:
+    driver: local
